@@ -17,7 +17,6 @@ end
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_19, :mri_20, :rbx]
-  gem 'hub', :require=>nil
   gem 'quiet_assets'
 end
 group :development, :test do
