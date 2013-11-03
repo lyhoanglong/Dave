@@ -32,3 +32,5 @@ group :test do
   gem 'launchy'
   gem 'mongoid-rspec'
 end
+
+gem 'json'
