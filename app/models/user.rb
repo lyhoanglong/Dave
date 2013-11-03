@@ -82,6 +82,8 @@ Registration Process:
 
 =end
 
+require 'carrierwave/mongoid'
+
 class User
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -91,7 +93,6 @@ class User
   #       :recoverable, :rememberable, :trackable, :validatable
 
   devise :database_authenticatable, :token_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :authentication_keys => [:email]
-
 
   ## Database authenticatable
   field :email, :type => String, :default => ""
@@ -143,14 +144,20 @@ class User
 
   ## Token authenticatable
   field :authentication_token, :type => String
+  field :logo, :type => String, :default => nil
 
-  # run 'rake db:mongoid:create_indexes' to create indexes
-  index({ email: 1 }, { unique: true, background: true })
+  mount_uploader :logo, LogoUploader
 
   attr_accessible :first_name, :last_name, :authentication_token, :email, :password, :password_confirmation, :remember_me, :created_at, :updated_at, :company_name,
                   :address_number_2, :address_number_1, :phone, :phone_number_2, :billing_cycle, :billing_cycle_start_date, :is_profile_complete, :is_verified_email,
-                  :city, :country, :postal_code
+                  :city, :country, :postal_code, :logo, :logo_cache, :remove_logo
 
+
+  # run 'rake db:mongoid:create_indexes' to create indexes
+  index({ email: 1 }, { unique: true, background: true })
+  index({ type: 1 }, {name: "user_type_index", background: true })
+  index({ company_name: 1 }, { name: "user_company_index", background: true })
+  index({ billing_cycle: 1 }, { name: "user_billing_cycle_index", background: true })
 
   ### CALLBACK
   before_save :downcase_email, :ensure_authentication_token
@@ -201,7 +208,17 @@ class User
   #def forbid_changing_type
   #  errors[:type] = "can not be changed!" if self.type_changed?
   #end
-  #
+
+  def as_json(options = {})
+    lg, lg_thumb = nil, nil
+    unless  logo.nil?
+      lg = logo.as_json[:logo]["url"]
+      lg_thumb = logo.as_json[:logo][:thumb]["url"]
+    end
+
+    super.merge('logo' => lg, 'logo_thumb' => lg_thumb)
+  end
+
   def downcase_email
     self.email = self.email.downcase
   end
