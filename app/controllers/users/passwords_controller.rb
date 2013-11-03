@@ -15,6 +15,7 @@ class Users::PasswordsController < ApplicationController
         if params[:password] and params[:password_confirmation] and params[:password] == params[:password_confirmation]
           user.password = params[:password]
           user.password_confirmation = params[:password_confirmation]
+          user.is_verified_email = 'yes'
 
           user.save
           sign_in(user)

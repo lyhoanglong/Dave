@@ -100,14 +100,14 @@ class User
   field :company_name, :type => String
   field :phone, :type => String
   field :phone_number_2, :type => String
-  field :verification_status, :type => String, :default => 'waiting' ## 'waiting','verified'
+  field :approval_status, :type => String, :default => 'waiting' ## 'waiting','verified'
   field :type, :type => String, :default => 'windfarm_owner' ## {normal ...}
 
   field :postal_code, :type => String, :default => nil
   field :city, :type => String, :default => nil
   field :country, :type => String, :default => "United States"
 
-  field :sex, :type => String, :default => 'unknown' # man, woman, unknown
+  field :sex, :type => String, :default => 'unknown' # male, female, unknown
   field :birthday, :type => Date, :default => nil
   field :language, :type => String, :default => "en"
 
@@ -162,9 +162,9 @@ class User
 
   ## user phone to manual call to verify legitimate
   validates :phone, :presence => true, :uniqueness => true, :length => {:minimum => 9, :maximum => 16}, \
-            :numericality => {:only_integer => true}, :if => Proc.new { |user| user.is_verified_email == 'yes'}
+            :numericality => {:only_integer => true}, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
   validates :phone_number_2, :presence => true, :uniqueness => true, :length => {:minimum => 9, :maximum => 16}, :numericality => {:only_integer => true}, \
-            :if => Proc.new { |user| user.is_verified_email == 'yes'}
+            :if => Proc.new { |user| user.is_profile_complete == 'yes'}
 
   validates :first_name, :presence => true
   validates :first_name, :length => {:minimum => 1, :maximum => 20}, :if => Proc.new { |user| user.first_name }
@@ -173,27 +173,27 @@ class User
   validates :last_name, :length => {:minimum => 1, :maximum => 20}, :if => Proc.new { |user| user.last_name }
 
   validates :company_name, :presence => true, :length => {:minimum => 1, :maximum => 50}, \
-            :if => Proc.new { |user| user.is_verified_email == 'yes'}
+            :if => Proc.new { |user| user.is_profile_complete == 'yes'}
 
   validates :address_number_1, :presence => true, :length => {:minimum => 1, :maximum => 50}, \
-            :if => Proc.new { |user| user.is_verified_email == 'yes'}
+            :if => Proc.new { |user| user.is_profile_complete == 'yes'}
   validates :address_number_2, :presence => true, :length => {:minimum => 1, :maximum => 50}, \
-            :if => Proc.new { |user| user.is_verified_email == 'yes'}
+            :if => Proc.new { |user| user.is_profile_complete == 'yes'}
 
   validates :apn_token, :length => {:is => 64}, :allow_blank => true
   validates :password, :presence => true, :length => {:minimum => 6}, :confirmation => true, :if => Proc.new { |user| user.password }
 
   validates :type, :presence => true, :inclusion => {:in => ['service_provider', 'windfarm_owner']} ## etc
-  validates :verification_status, :presence => true, :inclusion => {:in => ['waiting', 'verified']}
-  #validates :sex, :inclusion => {:in => ['man', 'woman', 'unknown']}
+  validates :approval_status, :presence => true, :inclusion => {:in => ['waiting', 'verified']}
+  validates :sex, :inclusion => {:in => ['male', 'female', 'unknown']}
   validates :is_profile_complete, :presence => true, :inclusion => {:in => ['yes', 'no']}
   validates :is_verified_email, :presence => true, :inclusion => {:in => ['yes', 'no']}
   validates :billing_cycle, :inclusion => {:in => ['1 year', '2 years', '3 years']}, :if => Proc.new { |user| not user.billing_cycle.nil? }
   validates :billing_cycle_start_date, :presence => true, :if => Proc.new { |user| not user.billing_cycle.nil? }
 
-  validates :postal_code, :presence => true, :if => Proc.new { |user| user.is_verified_email == 'yes'}
-  validates :city, :presence => true, :if => Proc.new { |user| user.is_verified_email == 'yes'}
-  validates :country, :presence => true, :if => Proc.new { |user| user.is_verified_email == 'yes'}
+  validates :postal_code, :presence => true, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
+  validates :city, :presence => true, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
+  validates :country, :presence => true, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
 
   ## Custom validation
   #validate :forbid_changing_type, :on => :update

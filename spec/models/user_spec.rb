@@ -55,7 +55,7 @@ describe User do
     it { should respond_to(:phone_number_2) }
     it { should respond_to(:password) }
     it { should respond_to(:password_confirmation) }
-    it { should respond_to(:verification_status) }
+    it { should respond_to(:approval_status) }
 
     it { should respond_to(:billing_cycle) }
     it { should respond_to(:billing_cycle_start_date) }
@@ -140,6 +140,7 @@ describe User do
       @user = User.new(
         @attr.merge({
           :is_verified_email => 'yes',
+          :is_profile_complete => 'yes',
           :company_name => 'Colin Corp',
           :phone => '841689287707',
           :phone_number_2 => '841689287707',

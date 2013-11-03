@@ -93,10 +93,10 @@ Dave::Application.configure do
       :enable_starttls_auto => true,
       :address            => 'smtp.gmail.com',
       :port               => 587,
-      :domain             => 'timboxapp.com',
+      :domain             => 'dave.com',
       :authentication     => :plain,
-      :user_name          => 'quyetdc.uet@gmail.com',
-      :password           => 'congquyet90', # for security reasons you can use a environment variable too. (ENV['INFO_MAIL_PASS'])
+      :user_name          => 'colindao.2013@gmail.com',
+      :password           => 'emailsupport', # for security reasons you can use a environment variable too. (ENV['INFO_MAIL_PASS'])
   }
 
 
