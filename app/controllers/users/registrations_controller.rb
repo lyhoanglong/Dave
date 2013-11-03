@@ -1,11 +1,23 @@
 # -*- encoding : utf-8 -*-
 
-class User::RegistrationsController < Devise::RegistrationsController
+class Users::RegistrationsController < Devise::RegistrationsController
+  respond_to :json, :html
+
   #include InvitationsHelper
   #include InternationalizationHelper
 
   #before_filter :require_no_authentication, :only => [:new, :create, :cancel]
   before_filter :authenticate_scope!, :only => [:update]
+
+  def create
+    build_resource(sign_up_params)
+
+    if resource.save
+      respond_with(resource)
+    else
+      respond_with(resource, {:errors => resource.errors.full_messages})
+    end
+  end
 
   ## Update user profile
   ## If Successul --> reset cache user

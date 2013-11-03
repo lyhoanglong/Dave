@@ -101,13 +101,13 @@ class User
   field :phone, :type => String
   field :phone_number_2, :type => String
   field :verification_status, :type => String, :default => 'waiting' ## 'waiting','verified'
-  field :type, :type => String, :default => 'normal' ## {normal ...}
+  field :type, :type => String, :default => 'windfarm_owner' ## {normal ...}
 
   field :postal_code, :type => String, :default => nil
   field :city, :type => String, :default => nil
   field :country, :type => String, :default => "United States"
 
-  field :sex, :type => String, :default => 'man' # man, woman, unknown
+  field :sex, :type => String, :default => 'unknown' # man, woman, unknown
   field :birthday, :type => Date, :default => nil
   field :language, :type => String, :default => "en"
 
@@ -182,7 +182,7 @@ class User
   validates :apn_token, :length => {:is => 64}, :allow_blank => true
   validates :password, :presence => true, :length => {:minimum => 6}, :confirmation => true, :if => Proc.new { |user| user.password }
 
-  validates :type, :presence => true, :inclusion => {:in => ['normal', 'windfarm_owner']} ## etc
+  validates :type, :presence => true, :inclusion => {:in => ['service_provider', 'windfarm_owner']} ## etc
   validates :verification_status, :presence => true, :inclusion => {:in => ['waiting', 'verified']}
   #validates :sex, :inclusion => {:in => ['man', 'woman', 'unknown']}
   validates :is_profile_complete, :presence => true, :inclusion => {:in => ['yes', 'no']}
