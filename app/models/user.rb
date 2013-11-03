@@ -115,9 +115,6 @@ class User
   field :address_number_2, :type => String, :default => nil
   field :apn_token, :type => String, :default => nil
 
-  field :created_date, type: DateTime, default: DateTime.current
-  field :updated_date, type: DateTime, default: DateTime.current
-
   field :encrypted_password, :type => String, :default => ""
 
   #field :avatar, :type => String, :default => nil
