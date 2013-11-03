@@ -13,9 +13,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
     build_resource(sign_up_params)
 
     if resource.save
-      respond_with(resource)
+      user_info = resource.as_json.keep_if{|key, value| (%w(_id first_name last_name email type).include? key)}
+      respond_to do |format|
+        format.json {render :json => user_info, status: :created}
+      end
     else
-      respond_with(resource, {:errors => resource.errors.full_messages})
+      respond_to do |format|
+        format.json {render :json => resource.errors.full_messages, status: :bad_request}
+      end
     end
   end
 

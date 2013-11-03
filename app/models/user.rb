@@ -154,6 +154,7 @@ class User
 
   ### CALLBACK
   before_save :downcase_email, :ensure_authentication_token
+  after_create :send_admin_mail
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   ## use email to login
@@ -165,8 +166,11 @@ class User
   validates :phone_number_2, :presence => true, :uniqueness => true, :length => {:minimum => 9, :maximum => 16}, :numericality => {:only_integer => true}, \
             :if => Proc.new { |user| user.is_verified_email == 'yes'}
 
-  validates :first_name, :presence => true, :length => {:minimum => 1, :maximum => 20}
-  validates :last_name, :presence => true, :length => {:minimum => 1, :maximum => 20}
+  validates :first_name, :presence => true
+  validates :first_name, :length => {:minimum => 1, :maximum => 20}, :if => Proc.new { |user| user.first_name }
+
+  validates :last_name, :presence => true
+  validates :last_name, :length => {:minimum => 1, :maximum => 20}, :if => Proc.new { |user| user.last_name }
 
   validates :company_name, :presence => true, :length => {:minimum => 1, :maximum => 50}, \
             :if => Proc.new { |user| user.is_verified_email == 'yes'}
@@ -200,6 +204,10 @@ class User
   #
   def downcase_email
     self.email = self.email.downcase
+  end
+
+  def send_admin_mail
+    UserMailer.registration_confirmation(self).deliver
   end
 
 end

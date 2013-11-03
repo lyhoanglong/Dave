@@ -1,4 +1,9 @@
+require 'openssl'
+require 'net/smtp'
+
 Dave::Application.configure do
+  Net.instance_eval { remove_const :SMTPSession } if defined?(Net::SMTPSession)
+
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests
@@ -61,24 +66,39 @@ Dave::Application.configure do
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
 
-  config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    domain: ENV["DOMAIN_NAME"],
-    authentication: "plain",
-    enable_starttls_auto: true,
-    user_name: ENV["GMAIL_USERNAME"],
-    password: ENV["GMAIL_PASSWORD"]
+  #config.action_mailer.smtp_settings = {
+  #  address: "smtp.gmail.com",
+  #  port: 587,
+  #  domain: ENV["DOMAIN_NAME"],
+  #  authentication: "plain",
+  #  enable_starttls_auto: true,
+  #  user_name: ENV["GMAIL_USERNAME"],
+  #  password: ENV["GMAIL_PASSWORD"]
+  #}
+  #
+  #
+  #config.action_mailer.default_url_options = { :host => 'example.com' }
+  ## ActionMailer Config
+  ## Setup for production - deliveries, no errors raised
+  #config.action_mailer.delivery_method = :smtp
+  #config.action_mailer.perform_deliveries = true
+  #config.action_mailer.raise_delivery_errors = false
+  #config.action_mailer.default :charset => "utf-8"
+
+  #Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
+  ActionMailer::Base.delivery_method = :smtp
+  ActionMailer::Base.perform_deliveries = true
+  ActionMailer::Base.raise_delivery_errors = true
+  ActionMailer::Base.smtp_settings = {
+      :enable_starttls_auto => true,
+      :address            => 'smtp.gmail.com',
+      :port               => 587,
+      :domain             => 'timboxapp.com',
+      :authentication     => :plain,
+      :user_name          => 'quyetdc.uet@gmail.com',
+      :password           => 'congquyet90', # for security reasons you can use a environment variable too. (ENV['INFO_MAIL_PASS'])
   }
 
-
-  config.action_mailer.default_url_options = { :host => 'example.com' }
-  # ActionMailer Config
-  # Setup for production - deliveries, no errors raised
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.default :charset => "utf-8"
 
 
 end
