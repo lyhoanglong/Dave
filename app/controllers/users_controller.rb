@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
-  #before_filter :authenticate_user!
   respond_to :json, :html
 
+  before_filter :authenticate_user!
 
   def index
     @users = User.all
