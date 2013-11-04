@@ -11,6 +11,8 @@ gem 'unicorn'
 gem "actionmailer", "~> 3.2.6"
 gem 'json'
 
+gem 'debugger'
+
 # file uploader
 gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid'
 gem "carrierwave-processing", "~> 0.0.1"

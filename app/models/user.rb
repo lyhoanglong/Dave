@@ -89,6 +89,11 @@ class User
   include Mongoid::Timestamps
   include Mongoid::MultiParameterAttributes
 
+  WINDFARM_OWNER = 'windfarm_owner'
+  SERVICE_PROVIDER = 'service_provider'
+  SYSTEM_ADMINISTRATOR = 'system_administrator'
+  BASIC_USER_FIELDS = %w(first_name last_name company_name city country logo logo_thumb address_number1 address_number2 email type)
+
   #devise :database_authenticatable, :registerable,
   #       :recoverable, :rememberable, :trackable, :validatable
 
@@ -101,8 +106,8 @@ class User
   field :company_name, :type => String
   field :phone, :type => String
   field :phone_number_2, :type => String
-  field :approval_status, :type => String, :default => 'waiting' ## 'waiting','verified'
-  field :type, :type => String, :default => 'windfarm_owner' ## {normal ...}
+  field :approval_status, :type => String, :default => 'waiting' ## 'waiting','approved'
+  field :type, :type => String#, :default => User::WINDFARM_OWNER ## {service_provider, system_administrator ...}
 
   field :postal_code, :type => String, :default => nil
   field :city, :type => String, :default => nil
@@ -150,7 +155,7 @@ class User
 
   attr_accessible :first_name, :last_name, :authentication_token, :email, :password, :password_confirmation, :remember_me, :created_at, :updated_at, :company_name,
                   :address_number_2, :address_number_1, :phone, :phone_number_2, :billing_cycle, :billing_cycle_start_date, :is_profile_complete, :is_verified_email,
-                  :city, :country, :postal_code, :logo, :logo_cache, :remove_logo
+                  :city, :country, :postal_code, :logo, :logo_cache, :remove_logo, :type, :approval_status
 
 
   # run 'rake db:mongoid:create_indexes' to create indexes
@@ -190,8 +195,8 @@ class User
   validates :apn_token, :length => {:is => 64}, :allow_blank => true
   validates :password, :presence => true, :length => {:minimum => 6}, :confirmation => true, :if => Proc.new { |user| user.password }
 
-  validates :type, :presence => true, :inclusion => {:in => ['service_provider', 'windfarm_owner']} ## etc
-  validates :approval_status, :presence => true, :inclusion => {:in => ['waiting', 'verified']}
+  validates :type, :inclusion => {:in => [User::SERVICE_PROVIDER, User::WINDFARM_OWNER, User::SYSTEM_ADMINISTRATOR]}, :if => Proc.new { |user| user.type} ## etc
+  validates :approval_status, :presence => true, :inclusion => {:in => ['waiting', 'approved']}
   validates :sex, :inclusion => {:in => ['male', 'female', 'unknown']}
   validates :is_profile_complete, :presence => true, :inclusion => {:in => ['yes', 'no']}
   validates :is_verified_email, :presence => true, :inclusion => {:in => ['yes', 'no']}
@@ -202,6 +207,7 @@ class User
   validates :city, :presence => true, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
   validates :country, :presence => true, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
 
+  validate :only_one_system_administrator
   ## Custom validation
   #validate :forbid_changing_type, :on => :update
   #
@@ -227,4 +233,7 @@ class User
     UserMailer.registration_confirmation(self).deliver
   end
 
+  def only_one_system_administrator
+    errors.add(:type, 'Permission denied') if User.where(type: User::SYSTEM_ADMINISTRATOR).count > 1
+  end
 end

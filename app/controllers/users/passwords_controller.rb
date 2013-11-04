@@ -19,7 +19,10 @@ class Users::PasswordsController < ApplicationController
 
           user.save
           sign_in(user)
-           format.json{render :json => {:user => user, :auth_token => user.authentication_token}, :status => :created}
+
+          user_info = user.as_json.keep_if{|key, value| (%w(_id first_name last_name email type authentication_token).include? key)}
+
+          format.json{render :json => {:user => user_info, :auth_token => user.authentication_token}, :status => :created}
         else
           format.json{render :json => {:error => 'password not match'}, :status => :bad_request}
         end

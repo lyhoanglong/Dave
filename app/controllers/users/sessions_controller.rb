@@ -21,6 +21,9 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def destroy
+    if current_user
+      current_user.reset_authentication_token!
+    end
     ## What need to do when signout
     super
   end

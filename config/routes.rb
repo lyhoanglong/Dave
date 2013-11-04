@@ -5,6 +5,7 @@ Dave::Application.routes.draw do
   end
   root :to => "home#index"
   devise_for :users, :controllers => {:sessions => "users/sessions", :registrations => "users/registrations", :passwords => "users/passwords"}
-  resources :users
 
+  resources :users
+  match 'users/:id/approve', :to => "users#approve", :via => :put
 end
