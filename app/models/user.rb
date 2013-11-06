@@ -89,6 +89,10 @@ class User
   include Mongoid::Timestamps
   include Mongoid::MultiParameterAttributes
 
+  ## REFERENCES
+  has_many :windfarms
+
+
   WINDFARM_OWNER = 'windfarm_owner'
   SERVICE_PROVIDER = 'service_provider'
   SYSTEM_ADMINISTRATOR = 'system_administrator'
@@ -151,11 +155,14 @@ class User
   field :authentication_token, :type => String
   field :logo, :type => String, :default => nil
 
+  field :total_extra_users, :type => Integer, :default => 0
+  field :total_extra_farms, :type => Integer, :default => 0
+
   mount_uploader :logo, LogoUploader
 
   attr_accessible :first_name, :last_name, :authentication_token, :email, :password, :password_confirmation, :remember_me, :created_at, :updated_at, :company_name,
                   :address_number_2, :address_number_1, :phone, :phone_number_2, :billing_cycle, :billing_cycle_start_date, :is_profile_complete, :is_verified_email,
-                  :city, :country, :postal_code, :logo, :logo_cache, :remove_logo, :type, :approval_status
+                  :city, :country, :postal_code, :logo, :logo_cache, :remove_logo, :type, :approval_status, :total_extra_users, :total_extra_farms
 
 
   # run 'rake db:mongoid:create_indexes' to create indexes
@@ -177,6 +184,9 @@ class User
             :numericality => {:only_integer => true}, :if => Proc.new { |user| user.is_profile_complete == 'yes'}
   validates :phone_number_2, :presence => true, :uniqueness => true, :length => {:minimum => 9, :maximum => 16}, :numericality => {:only_integer => true}, \
             :if => Proc.new { |user| user.is_profile_complete == 'yes'}
+
+  validates :total_extra_users, :presence => true, :numericality => {:only_integer => true}
+  validates :total_extra_farms, :presence => true, :numericality => {:only_integer => true}
 
   validates :first_name, :presence => true
   validates :first_name, :length => {:minimum => 1, :maximum => 20}, :if => Proc.new { |user| user.first_name }

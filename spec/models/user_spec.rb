@@ -69,6 +69,9 @@ describe User do
     it { should respond_to(:current_sign_in_at) }
     it { should respond_to(:last_sign_in_at) }
 
+    it { should respond_to(:total_extra_users) }
+    it { should respond_to(:total_extra_farms) }
+
     it {should be_valid}
   end
 
@@ -170,6 +173,30 @@ describe User do
     it "is_verified_email" do
       @user.is_verified_email = 'invalid'
       @user.should_not be_valid
+    end
+
+    describe "total_extra_users" do
+      it 'total_extra_users is blank' do
+        @user.total_extra_users = ''
+        @user.should_not be_valid
+      end
+
+      it 'total_extra_users has verbal characters' do
+        @user.total_extra_users = '123456789a'
+        @user.should_not be_valid
+      end
+    end
+
+    describe "total_extra_farms" do
+      it 'total_extra_farms is blank' do
+        @user.total_extra_farms = ''
+        @user.should_not be_valid
+      end
+
+      it 'total_extra_farms has verbal characters' do
+        @user.total_extra_farms = '123456789a'
+        @user.should_not be_valid
+      end
     end
 
     describe "phone" do
